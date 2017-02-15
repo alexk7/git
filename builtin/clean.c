@@ -154,7 +154,6 @@ static int remove_dirs(struct strbuf *path, const char *prefix, int force_flag,
 	struct strbuf quoted = STRBUF_INIT;
 	struct dirent *e;
 	int res = 0, ret = 0, gone = 1, original_len = path->len, len;
-	int saved_errno;
 	struct string_list dels = STRING_LIST_INIT_DUP;
 
 	*dir_gone = 1;
@@ -174,8 +173,8 @@ static int remove_dirs(struct strbuf *path, const char *prefix, int force_flag,
 	if (!dir) {
 		/* an empty dir could be removed even if it is unreadble */
 		res = dry_run ? 0 : rmdir(path->buf);
-		saved_errno = errno;
 		if (res) {
+			int saved_errno = errno;
 			quote_path_relative(path->buf, prefix, &quoted);
 			errno = saved_errno;
 			warning_errno(_(msg_warn_remove_failed), quoted.buf);
@@ -207,11 +206,11 @@ static int remove_dirs(struct strbuf *path, const char *prefix, int force_flag,
 			continue;
 		} else {
 			res = dry_run ? 0 : unlink(path->buf);
-			saved_errno = errno;
 			if (!res) {
 				quote_path_relative(path->buf, prefix, &quoted);
 				string_list_append(&dels, quoted.buf);
 			} else {
+				int saved_errno = errno;
 				quote_path_relative(path->buf, prefix, &quoted);
 				errno = saved_errno;
 				warning_errno(_(msg_warn_remove_failed), quoted.buf);
@@ -232,10 +231,10 @@ static int remove_dirs(struct strbuf *path, const char *prefix, int force_flag,
 
 	if (*dir_gone) {
 		res = dry_run ? 0 : rmdir(path->buf);
-		saved_errno = errno;
 		if (!res)
 			*dir_gone = 1;
 		else {
+			int saved_errno = errno;
 			quote_path_relative(path->buf, prefix, &quoted);
 			errno = saved_errno;
 			warning_errno(_(msg_warn_remove_failed), quoted.buf);
@@ -860,7 +859,7 @@ static void interactive_main_loop(void)
 
 int cmd_clean(int argc, const char **argv, const char *prefix)
 {
-	int i, res, saved_errno;
+	int i, res;
 	int dry_run = 0, remove_directories = 0, quiet = 0, ignored = 0;
 	int ignored_only = 0, config_set = 0, errors = 0, gone = 1;
 	int rm_flags = REMOVE_DIR_KEEP_NESTED_GIT;
@@ -987,8 +986,8 @@ int cmd_clean(int argc, const char **argv, const char *prefix)
 			}
 		} else {
 			res = dry_run ? 0 : unlink(abs_path.buf);
-			saved_errno = errno;
 			if (res) {
+				int saved_errno = errno;
 				qname = quote_path_relative(item->string, NULL, &buf);
 				errno = saved_errno;
 				warning_errno(_(msg_warn_remove_failed), qname);
