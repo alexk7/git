@@ -1825,7 +1825,7 @@ class P4Submit(Command, P4UserMap):
                 for f in filesToAdd:
                     print "  " + f
             print
-            return True
+            return False
 
         #
         # Let the user edit the change description, then submit it.
