@@ -2028,9 +2028,9 @@ class P4Submit(Command, P4UserMap):
             print "Synchronizing p4 checkout..."
             if new_client_dir:
                 # old one was destroyed, and maybe nobody told p4
-                p4_sync("...", "-f")
+                p4_sync(self.depotPath + "...", "-f")
             else:
-                p4_sync("...")
+                p4_sync(self.depotPath + "...")
         self.check()
 
         commits = []
